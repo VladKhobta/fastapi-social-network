@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str = 'HS256'
     jwt_expiration: int = 3600  # token lifetime is one hour
 
+    database_url: str = "sqlite:///./database.sqlite3"
+
 
 settings = Settings(
     _env_file='.env',

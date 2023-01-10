@@ -8,6 +8,7 @@ uvicorn = "*"
 fastapi = "*"
 python-multipart = "*"
 pydantic = {extras = ["dotenv"], version = "*"}
+sqlalchemy = "*"
 
 [dev-packages]
 
