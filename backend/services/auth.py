@@ -9,15 +9,16 @@ from passlib.hash import bcrypt
 from sqlalchemy.orm import Session
 
 import backend.db.models.users
-from ..schemas import User, UserCreate, Token
 from ..settings import settings
 from ..db.database import get_session
 
+from ..db import models
+from .. import schemas
 
 oauth_scheme = OAuth2PasswordBearer(tokenUrl='/auth/sign-in')
 
 
-def get_current_user(token: str = Depends(oauth_scheme)):
+def get_current_user(token: str = Depends(oauth_scheme)) -> schemas.User:
     return AuthService.validate_token(token)
 
 
@@ -31,7 +32,7 @@ class AuthService:
         return bcrypt.hash(password)
 
     @classmethod
-    def validate_token(cls, token: str) -> User:
+    def validate_token(cls, token: str) -> models.User:
         exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Could not validate credentials',
@@ -52,15 +53,15 @@ class AuthService:
         user_data = payload.get('user')
 
         try:
-            user = User.parse_obj(user_data)
+            user = schemas.User.parse_obj(user_data)
         except ValidationError:
             raise exception from None
 
         return user
 
     @classmethod
-    def create_token(cls, user: backend.db.models.users.User) -> Token:
-        user_data = User.from_orm(user)
+    def create_token(cls, user: models.User) -> schemas.Token:
+        user_data = schemas.User.from_orm(user)
 
         now = datetime.utcnow()
         payload = {
@@ -76,14 +77,14 @@ class AuthService:
             algorithm=settings.jwt_algorithm,
         )
 
-        return Token(access_token=token)
+        return schemas.Token(access_token=token)
 
 
     def __init__(self, session: Session = Depends(get_session)):
         self.session = session
 
-    def register_new_user(self, user_data: UserCreate) -> Token:
-        user = backend.db.models.users.User(
+    def register_new_user(self, user_data: schemas.UserCreate) -> schemas.Token:
+        user = models.User(
             email=user_data.email,
             username=user_data.username,
             password_hash=self.hash_password(user_data.password),
@@ -94,7 +95,7 @@ class AuthService:
 
         return self.create_token(user)
 
-    def authenticate_user(self, username: str, password: str) -> Token:
+    def authenticate_user(self, username: str, password: str) -> schemas.Token:
         exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Incorrect username or password',
@@ -105,8 +106,8 @@ class AuthService:
 
         user = (
             self.session
-            .query(backend.db.models.users.User)
-            .filter(backend.db.models.users.User.username == username)
+            .query(models.User)
+            .filter(models.User.username == username)
             .first()
         )
 

@@ -13,14 +13,19 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="59779727-e8c1-4f87-9909-e14d7dce5674">
-      <console name="Connection" type="STANDARD" schema="" session="Main"><![CDATA[SELECT * FROM users;]]></console>
+      <console name="Connection" type="STANDARD" schema="" session="Main"><![CDATA[SELECT * FROM posts;]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files />
+    <open-files>
+      <object connection-id="59779727-e8c1-4f87-9909-e14d7dce5674" object-ref="schemas/main/tables/posts" />
+    </open-files>
+  </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="59779727-e8c1-4f87-9909-e14d7dce5674" dataset="main.posts" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />
