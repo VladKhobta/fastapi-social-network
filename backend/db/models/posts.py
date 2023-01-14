@@ -12,5 +12,7 @@ class Post(Base):
     title = Column(String)
     content = Column(String)
     created_at = Column(DateTime)
+    likes_count = Column(Integer, default=0)
+    dislikes_count = Column(Integer, default=0)
 
     user = relationship('User', backref='posts')

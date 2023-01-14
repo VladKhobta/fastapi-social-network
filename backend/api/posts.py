@@ -40,5 +40,3 @@ def update_post(
         post_id,
         post_data
     )
-
-
