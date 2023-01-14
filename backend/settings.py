@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     server_host: str = '127.0.0.1'
     server_port: int = 8000
 
-    jwt_secret: str = 'fkl'
+    jwt_secret: str = 'Bq1JZg1LGARjsonIYEP61SFsK4DqACVn2xeztvz1w4w'
     jwt_algorithm: str = 'HS256'
     jwt_expiration: int = 3600  # token lifetime is one hour
 
