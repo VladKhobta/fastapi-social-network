@@ -3,12 +3,13 @@ from fastapi.security import OAuth2PasswordBearer
 from pydantic import ValidationError
 
 from datetime import datetime, timedelta
+import requests
 
 from jose import jwt, JWTError
 from passlib.hash import bcrypt
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
-import backend.db.models.users
 from ..settings import settings
 from ..db.database import get_session
 
@@ -79,19 +80,60 @@ class AuthService:
 
         return schemas.Token(access_token=token)
 
+    @classmethod
+    def validate_email(cls, email: str) -> bool:
+        exception = HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Email verification failed',
+            headers={
+                'WWW-Authenticate': 'Bearer'
+            },
+        )
+
+        try:
+            req = requests.get(
+                f'https://api.hunter.io/v2/email-verifier?email={email}&api_key={settings.email_hunter_api_key}'
+            )
+            result = req.json()['data']['result']
+        except requests.exceptions.RequestException:
+            raise exception
+
+        return not result == 'undeliverable'
+
 
     def __init__(self, session: Session = Depends(get_session)):
         self.session = session
 
     def register_new_user(self, user_data: schemas.UserCreate) -> schemas.Token:
+        email_exception = HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Email is not valid',
+            headers={
+                'WWW-Authenticate': 'Bearer'
+            },
+        )
+
+        username_exception = HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='This username already exists',
+            headers={
+                'WWW-Authenticate': 'Bearer'
+            },
+        )
+
+        if not self.validate_email(user_data.email):
+            raise email_exception
+
         user = models.User(
             email=user_data.email,
             username=user_data.username,
             password_hash=self.hash_password(user_data.password),
         )
-
-        self.session.add(user)
-        self.session.commit()
+        try:
+            self.session.add(user)
+            self.session.commit()
+        except IntegrityError:
+            raise username_exception
 
         return self.create_token(user)
 
