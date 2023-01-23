@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
-from ..schemas import Vote, User
+from ..schemas import User
 from ..services import get_current_user, VotesService
 
 router = APIRouter(
