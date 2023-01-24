@@ -19,7 +19,7 @@ pipenv install
     ```
     python
     ```
-    2. В оболочке python^
+    2. В оболочке python:
     ```python
     >>> from backend.db.database import engine
     >>> from backend.db.models.base import Base
