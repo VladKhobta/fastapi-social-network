@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite:///./database.sqlite3"
 
-    email_hunter_api_key: str
+    email_hunter_api_key: str = ''
 
 
 settings = Settings(
