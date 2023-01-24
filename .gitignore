@@ -1,4 +1,4 @@
 .idea
 database.sqlite3
-/migrations
+/migrations/versions
 .env
