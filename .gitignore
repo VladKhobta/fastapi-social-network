@@ -1,4 +1,6 @@
 .idea
 database.sqlite3
-/migrations/versions
+/migrations/versions/*
 .env
+
+!/migrations/versions/.gitkeep
